@@ -56,4 +56,45 @@ print(status.stderr)
 
 # COMMAND ----------
 
+import gnupg
+import os 
+import pandas as pd 
+#Key pair created successfully.
+#Fingerprint: DE532B5CBB2D4E75CAF1EF60C93F0D89414FF66C
+gpg = gnupg.GPG('/Users/tannut.tawornsan@lotuss.com/')
 
+# dbfs:/FileStore/shared_uploads/tannut.tawornsan@lotuss.com/emp_info_20220228.txt
+# /FileStore/tables/emp_info_20220228.txt
+
+#/dbfs/FileStore/shared_uploads/tannut.tawornsan@lotuss.com/emp_info2_20220228_txt.gpg
+
+path ='/dbfs/FileStore/shared_uploads/tannut.tawornsan@lotuss.com/'
+testfile = '/emp_info2_20220228_txt.gpg'
+
+    
+with open(path + testfile, 'rb') as fin:
+    b_data = fin.read()
+str_data = b_data.decode('utf8')
+gpg.decrypt(str_data, passphrase = 'mypasspharse',output= path +'test.csv')
+
+  #decrypted_data = gpg.decrypt(str(encrypted_ascii_data),passphrase="password")
+
+
+# COMMAND ----------
+
+dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get()
+
+# COMMAND ----------
+
+import os 
+path = '/dbfs/FileStore/shared_uploads/tannut.tawornsan@lotuss.com/'
+for directory in os.listdir(path):
+    print(directory)
+
+# COMMAND ----------
+
+# MAGIC %fs ls
+
+# COMMAND ----------
+
+f = open("/dbfs/FileStore/shared_uploads/tannut.tawornsan@lotuss.com/emp_info_20220228.txt", "r")
