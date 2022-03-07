@@ -51,11 +51,11 @@ for k in import_result.results:
 # encrypt file
 # path : /dbfs/FileStore/shared_uploads/tannut.tawornsan@lotuss.com/emp_info_20220304.txt
 
-with open('/dbfs/FileStore/shared_uploads/tannut.tawornsan@lotuss.com/emp_info_20220304.txt', 'rb') as f:
+with open('/dbfs/FileStore/xxxxxxxxxxxxx.txt', 'rb') as f:
     status = gpg.encrypt_file(
         file=f,
         recipients=['tannut.tawornsan@lotuss.com'],
-        output='/dbfs/FileStore/shared_uploads/tannut.tawornsan@lotuss.com/emp_info_20220304_encrypted.txt.gpg',
+        output='/dbfs/FileStore/xxxxxxxxxx.gpg',
     )
 
 print(status.ok)
@@ -65,22 +65,22 @@ print('~'*50)
 
 # COMMAND ----------
 
-dbutils.fs.ls("/FileStore/shared_uploads/tannut.tawornsan@lotuss.com/")
+dbutils.fs.ls("/FileStore/xxxxxxxxxxx/")
 
 # COMMAND ----------
 
-df = spark.read.text("dbfs:/FileStore/shared_uploads/tannut.tawornsan@lotuss.com/emp_info_20220304_encrypted.txt.gpg")
+df = spark.read.text("dbfs:/FileStore/xxxxxxxxxxxxxx.gpg")
 
 display(df)
 
 # COMMAND ----------
 
 # decrypt file
-with open('/dbfs/FileStore/shared_uploads/tannut.tawornsan@lotuss.com/emp_info_20220304_encrypted.txt.gpg', 'rb') as f:
+with open('/dbfs/FileStore/xxxxxxx.gpg', 'rb') as f:
     status = gpg.decrypt_file(
         file=f,
         passphrase='txnnxt',
-        output='/dbfs/FileStore/shared_uploads/tannut.tawornsan@lotuss.com/emp_info_20220304_Decrypted.txt',
+        output='/dbfs/FileStore/xxxxxxxxxxxxxx',
     )
 
 print(status.ok)
@@ -89,6 +89,44 @@ print(status.stderr)
 
 # COMMAND ----------
 
-df = spark.read.text("dbfs:/FileStore/shared_uploads/tannut.tawornsan@lotuss.com/emp_info_20220304_Decrypted.txt")
+df = spark.read.text("dbfs:/FileStore/xxxxxxxxxxxxxxxxxxx")
 
 display(df)
+
+# COMMAND ----------
+
+# MAGIC %md #Ingest to Blob
+
+# COMMAND ----------
+
+# MAGIC %python
+# MAGIC storage_account_name = "xxxxxx"
+# MAGIC storage_account_access_key = "xxxxxxx"
+# MAGIC container_name = "xxxxxxxxxxx"
+
+# COMMAND ----------
+
+# MAGIC %python
+# MAGIC spark.conf.set(
+# MAGIC   "fs.azure.account.key."+storage_account_name+".blob.core.windows.net",storage_account_access_key
+# MAGIC )
+
+# COMMAND ----------
+
+# MAGIC %python
+# MAGIC container_path = f"wasbs://{container_name}@{storage_account_name}.blob.core.windows.net"
+# MAGIC blob_folder = f"{container_path}/xxxxxxxxxx"
+# MAGIC print(blob_folder)
+
+# COMMAND ----------
+
+# MAGIC %python
+# MAGIC 
+# MAGIC output_container_path = '/FileStore/xxxxxxxxxxxxx'
+
+# COMMAND ----------
+
+# MAGIC %python
+# MAGIC FilePath = output_container_path
+# MAGIC Target = blob_folder
+# MAGIC dbutils.fs.cp(FilePath,Target)
